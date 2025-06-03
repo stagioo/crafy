@@ -1,10 +1,10 @@
-import Image from "next/image";
+import { CTASection } from "@/components/app/CTA";
 
 export default function Home() {
   return (
     <>
       <div>
-        <h1>hello world</h1>
+        <CTASection h2="Get your link" />
       </div>
     </>
   );
