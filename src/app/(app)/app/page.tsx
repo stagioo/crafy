@@ -12,7 +12,7 @@ export default function SettingsSection() {
         <Progress value={50} />
       </div>
       <div>
-        <TemplateSection />
+        <GetURLSection />
       </div>
     </div>
   );
