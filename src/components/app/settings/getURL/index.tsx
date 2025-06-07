@@ -4,7 +4,8 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { useState, useEffect } from "react";
 import { supabase } from "@/lib/supabase";
-function CTASection({ h2 }: { h2: string }) {
+
+function CTASection({ h2, onSave }: { h2: string; onSave?: (success: boolean) => void }) {
   const [link, setInputValue] = useState("");
 
   // Cargar el valor guardado al montar el componente
@@ -32,8 +33,10 @@ function CTASection({ h2 }: { h2: string }) {
 
     if (error) {
       alert(`${error.message}`);
+      onSave?.(false);
     } else {
       alert("link saved");
+      onSave?.(true);
     }
   };
 
@@ -60,11 +63,12 @@ function CTASection({ h2 }: { h2: string }) {
     </div>
   );
 }
-export default function GetURLSection() {
+
+export default function GetURLSection({ onSave }: { onSave?: (success: boolean) => void }) {
   return (
     <>
       <div>
-        <CTASection h2="Claim your link" />
+        <CTASection h2="Claim your link" onSave={onSave} />
       </div>
     </>
   );
