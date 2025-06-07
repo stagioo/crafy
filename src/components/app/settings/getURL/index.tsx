@@ -5,10 +5,15 @@ import { Button } from "@/components/ui/button";
 import { useState, useEffect } from "react";
 import { supabase } from "@/lib/supabase";
 
-function CTASection({ h2, onSave }: { h2: string; onSave?: (success: boolean) => void }) {
+function CTASection({
+  h2,
+  onSave,
+}: {
+  h2: string;
+  onSave: (success: boolean, link?: string, id?: string) => void;
+}) {
   const [link, setInputValue] = useState("");
 
-  // Cargar el valor guardado al montar el componente
   useEffect(() => {
     const savedValue = localStorage.getItem("savedInput");
     if (savedValue) {
@@ -23,20 +28,23 @@ function CTASection({ h2, onSave }: { h2: string; onSave?: (success: boolean) =>
     const { user } = data;
 
     if (!user) {
-      console.error("user dont authenticated");
+      console.error("user not authenticated");
+      onSave(false);
       return;
     }
 
-    const { error } = await supabase
+    const { data: insertedData, error } = await supabase
       .from("user_page")
-      .insert([{ user_id: user.id, link, template_type: "blog" }]);
+      .insert([{ user_id: user.id, link, template_type: "blog" }])
+      .select("id")
+      .single();
 
     if (error) {
-      alert(`${error.message}`);
-      onSave?.(false);
+      alert(`Error: ${error.message}`);
+      onSave(false);
     } else {
-      alert("link saved");
-      onSave?.(true);
+      alert("Link saved");
+      onSave(true, link, insertedData.id); // Pasa link y id
     }
   };
 
@@ -45,7 +53,7 @@ function CTASection({ h2, onSave }: { h2: string; onSave?: (success: boolean) =>
       <h2 className="text-lg font-medium">{h2}</h2>
       <div className="flex gap-2 w-full">
         <Input
-          type="email"
+          type="text" // Cambiado de email a text, ya que es un link
           placeholder="Enter your link"
           className="w-xs"
           value={link}
@@ -64,12 +72,14 @@ function CTASection({ h2, onSave }: { h2: string; onSave?: (success: boolean) =>
   );
 }
 
-export default function GetURLSection({ onSave }: { onSave?: (success: boolean) => void }) {
+export default function GetURLSection({
+  onSave,
+}: {
+  onSave: (success: boolean, link?: string, id?: string) => void;
+}) {
   return (
-    <>
-      <div>
-        <CTASection h2="Claim your link" onSave={onSave} />
-      </div>
-    </>
+    <div>
+      <CTASection h2="Claim your link" onSave={onSave} />
+    </div>
   );
 }

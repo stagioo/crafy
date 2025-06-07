@@ -3,17 +3,20 @@
 import TemplateSection from "@/components/app/settings/getTemplate";
 import GetURLSection from "@/components/app/settings/getURL";
 import { Progress } from "@/components/ui/progress";
-import * as React from "react";
 import { useState } from "react";
 
 export default function SettingsSection() {
   const [progress, setProgress] = useState(50);
   const [showTemplate, setShowTemplate] = useState(false);
+  const [link, setLink] = useState<string | null>(null);
+  const [pageId, setPageId] = useState<string | null>(null);
 
-  const handleSave = (success: boolean) => {
-    if (success) {
+  const handleSave = (success: boolean, link?: string, id?: string) => {
+    if (success && link && id) {
       setProgress(100);
       setShowTemplate(true);
+      setLink(link);
+      setPageId(id);
     }
   };
 
@@ -23,7 +26,11 @@ export default function SettingsSection() {
         <Progress value={progress} />
       </div>
       <div>
-        {showTemplate ? <TemplateSection /> : <GetURLSection onSave={handleSave} />}
+        {showTemplate ? (
+          <TemplateSection link={link} pageId={pageId} />
+        ) : (
+          <GetURLSection onSave={handleSave} />
+        )}
       </div>
     </div>
   );
