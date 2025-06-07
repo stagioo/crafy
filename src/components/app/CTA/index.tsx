@@ -3,10 +3,10 @@
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { useState, useEffect } from "react";
-
+import { useRouter } from "next/navigation";
 export function CTASection({ h2 }: { h2: string }) {
   const [inputValue, setInputValue] = useState("");
-
+  const router = useRouter();
   // Cargar el valor guardado al montar el componente
   useEffect(() => {
     const savedValue = localStorage.getItem("savedInput");
@@ -19,6 +19,7 @@ export function CTASection({ h2 }: { h2: string }) {
     // Guardar en localStorage
     localStorage.setItem("savedInput", inputValue);
     // Aquí podrías añadir más lógica de envío si es necesario
+    router.push("/login");
   };
 
   return (
