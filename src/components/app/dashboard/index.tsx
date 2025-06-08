@@ -24,7 +24,8 @@ export default function DashboardSection() {
   useEffect(() => {
     const getUserProfile = async () => {
       try {
-        const { data: userData, error: userError } = await supabase.auth.getUser();
+        const { data: userData, error: userError } =
+          await supabase.auth.getUser();
         if (userError) throw userError;
         const { user } = userData;
 
@@ -62,7 +63,11 @@ export default function DashboardSection() {
         {userLink ? (
           <p>
             Ir a tu página:{" "}
-            <Link href={`/${userLink}`} className="text-blue-500 hover:text-blue-700 underline">
+            <Link
+              target="_blank"
+              href={`/${userLink}`}
+              className="text-blue-500 hover:text-blue-700 underline"
+            >
               {userLink}
             </Link>
           </p>
