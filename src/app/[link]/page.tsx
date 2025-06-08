@@ -1,51 +1,53 @@
 "use client";
+
 import { supabase } from "@/lib/supabase";
-import { useRouter } from "next/navigation";
-import { useState, useEffect } from "react";
-import React from "react";
-export default function LinkPage({
-  params: paramsPromise,
-}: {
-  params: Promise<{ link: string }>;
-}) {
-  const params = React.use(paramsPromise);
-  const router = useRouter();
-  const [loading, setLoading] = useState(true);
 
-  useEffect(() => {
-    const checkLink = async () => {
-      try {
-        const { data, error } = await supabase
-          .from("user_page")
-          .select("link")
-          .eq("link", params.link)
-          .single();
+async function getUserLink() {
+  // obtener los datos del usuario de supabase.
+  const {
+    data: { user },
+    error: userError,
+  } = await supabase.auth.getUser();
 
-        if (error || !data) {
-          router.push("/not-found");
-          return;
-        }
-      } catch (err) {
-        router.push("/not-found");
-      } finally {
-        setLoading(false);
-      }
+  // verificar si el usuario existe
+  if (userError || !user) {
+    return {
+      link: null,
+      email: null,
+      error: userError?.message || "no hay usuario autenticado",
     };
-
-    checkLink();
-  }, [params.link, router]);
-
-  if (loading) {
-    return (
-      <div className="flex justify-center items-center h-screen">
-        Cargando...
-      </div>
-    );
   }
 
+  // consultar la tabla user_page para extraer datos: link
+
+  const { data, error } = await supabase
+    .from("user_page")
+    .select("link")
+    .eq("user_id", user.id)
+    .single();
+
+  if (error) {
+    return { link: null, email: user.email, error: error.message };
+  }
+
+  return { link: data.link, email: user.email, error: null };
+}
+
+export default async function LinkPage() {
+  const { link, email, error } = await getUserLink();
   return (
-    <div className="flex justify-center items-center h-screen">
-      <h1 className="text-2xl font-bold">Hello World</h1>
-    </div>
+    <>
+      <div>
+        <h1>Welcome</h1>
+        {error ? (
+          <p>Error: {error}</p>
+        ) : (
+          <p>
+            {email ? `usuario: ${email}` : `no hay usuario logueado`}{" "}
+            {link !== null ? `Link ${link}` : "Link no encontrado"}
+          </p>
+        )}
+      </div>
+    </>
   );
 }
