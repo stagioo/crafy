@@ -33,9 +33,21 @@ function CTASection({
       return;
     }
 
+    // Obtener el nombre y avatar del usuario de sus metadatos
+    const profileName = user.user_metadata?.name || "Usuario";
+    const profileImage = user.user_metadata?.avatar_url || null;
+
     const { data: insertedData, error } = await supabase
       .from("user_page")
-      .insert([{ user_id: user.id, link, template_type: "blog" }])
+      .insert([
+        { 
+          user_id: user.id, 
+          link, 
+          template_type: "blog",
+          profile_name: profileName,
+          profile_image: profileImage
+        }
+      ])
       .select("id")
       .single();
 
@@ -44,7 +56,7 @@ function CTASection({
       onSave(false);
     } else {
       alert("Link saved");
-      onSave(true, link, insertedData.id); // Pasa link y id
+      onSave(true, link, insertedData.id);
     }
   };
 
@@ -53,7 +65,7 @@ function CTASection({
       <h2 className="text-lg font-medium">{h2}</h2>
       <div className="flex gap-2 w-full">
         <Input
-          type="text" // Cambiado de email a text, ya que es un link
+          type="text"
           placeholder="Enter your link"
           className="w-xs"
           value={link}
